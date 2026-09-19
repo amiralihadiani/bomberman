@@ -73,3 +73,14 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+*.index
+Bomberman/UserSettings/Search.settings
+*.gbc
+*.obj
+*.dwlt
+*.txt
+Bomberman/Library/Artifacts/04/04ab59d122ca17403c954a6187140c62
+/Bomberman/Library
+*.backup
+*.meta
+/Bomberman/Temp
