@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.Tilemaps;
-
-
 public class BombController : MonoBehaviour
 {
     [SerializeField] private GameObject bombPrefab;
@@ -14,11 +12,9 @@ public class BombController : MonoBehaviour
     [SerializeField] private float explosionDuration = 1f;
     [SerializeField] LayerMask explosionLayerMask;
     [SerializeField] int explosionRadius = 1;
-    public Tilemap destructibleTiles;
-    public Destructible destructiblePrefab;
-
-
-
+    [SerializeField]Tilemap destructibleTiles;
+    [SerializeField] Destructible destructiblePrefab;
+    
     private void OnEnable()
     {
         bombsRemaining = bombAmount;
@@ -37,9 +33,8 @@ public class BombController : MonoBehaviour
     }
     private IEnumerator PlaceBomb()
     {
-        Vector2 position = transform.position;
-        position.x = Mathf.Round(position.x);
-        position.y = Mathf.Round(position.y);
+        Vector3Int cell = destructibleTiles.WorldToCell(transform.position);
+        Vector3 position = destructibleTiles.GetCellCenterWorld(cell);
         GameObject bomb = Instantiate(bombPrefab, position, Quaternion.identity);
         bombsRemaining--;
         yield return new WaitForSeconds(bombFuseTime);
@@ -48,14 +43,13 @@ public class BombController : MonoBehaviour
             yield break;
         }
         position = bomb.transform.position;
-        position.x = Mathf.Round(position.x);
-        position.y = Mathf.Round(position.y);
+
         Explosion explosion = Instantiate(explosionPrefab, position, Quaternion.identity);
         explosion.SetActiveRenderer(explosion.start);
         explosion.DestroyAfter(explosionDuration);
         Destroy(bomb);
         bombsRemaining++;
-    }
+    } 
     private void Explode(Vector2 position, Vector2 direction, int length)
     {
         if (length <= 0) {
