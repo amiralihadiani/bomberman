@@ -205,7 +205,7 @@ Transform:
   m_GameObject: {fileID: 77058849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -7.88, z: -10}
+  m_LocalPosition: {x: 0, y: 5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -242,11 +242,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GroundPool
   player: {fileID: 2029469285}
   groundPrefab: {fileID: 1983554942480217888, guid: 5da6dba25f5bfd444a862e58a4da9899, type: 3}
+  woodPickupPrefab: {fileID: 2885262617620004430, guid: 24f6901c2f624e047b5482c016a823b5, type: 3}
+  playerCollector: {fileID: 2029469287}
   groundCount: 3
-  moveSpeed: 8
+  moveSpeed: 3
   minGap: 2
   maxGap: 8
   gapChance: 0.6
+  woodYOffset: 0.6
+  roadWidth: 4
 --- !u!4 &415271285
 Transform:
   m_ObjectHideFlags: 0
@@ -256,7 +260,7 @@ Transform:
   m_GameObject: {fileID: 415271283}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.05, y: -12.65, z: 9.61}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -359,6 +363,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1487133735
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1487133736}
+  m_Layer: 0
+  m_Name: back
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1487133736
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487133735}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2029469285}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2029469280
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,9 +408,10 @@ GameObject:
   - component: {fileID: 2029469282}
   - component: {fileID: 2029469281}
   - component: {fileID: 2029469286}
+  - component: {fileID: 2029469287}
   m_Layer: 0
   m_Name: player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -494,10 +530,11 @@ Transform:
   m_GameObject: {fileID: 2029469280}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.8, y: -8.98, z: 0.33}
+  m_LocalPosition: {x: 0, y: 3.809475, z: 0.33}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1487133736}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2029469286
@@ -513,6 +550,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::movement_player
   moveSpeed: 8
+--- !u!114 &2029469287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029469280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f19bedf35be08c42b06e910eb858019, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerBridgeCollector
+  bridgeWoodPrefab: {fileID: 6583155941795086567, guid: c007b6c488fcfb441b1de876e304de65, type: 3}
+  groundCheckPoint: {fileID: 2029469285}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  rayDistance: 1.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
