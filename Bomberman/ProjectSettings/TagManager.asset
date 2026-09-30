@@ -5,16 +5,17 @@ TagManager:
   serializedVersion: 3
   tags:
   - ground
+  - WoodPickup
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
+  - Ground
   - 
-  - 
-  - 
+  - Plank
   - 
   - 
   - 
