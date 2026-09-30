@@ -72,7 +72,7 @@ public class PlayerBridgeCollector : MonoBehaviour
     private void BuildPlank()
     {
         collectedWoodCount--;
-        Vector3 spawnPosition = new Vector3(transform.position.x, fixedBridgeYPosition, transform.position.z);
+        Vector3 spawnPosition = new Vector3(transform.position.x, fixedBridgeYPosition, transform.position.z + stepZDistance);
         GameObject plank = Instantiate(bridgeWoodPrefab, spawnPosition, Quaternion.identity);
         PlankMovement moveScript = plank.GetComponent<PlankMovement>();
         if (moveScript != null)
