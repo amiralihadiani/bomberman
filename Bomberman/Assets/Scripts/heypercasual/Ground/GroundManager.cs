@@ -67,11 +67,15 @@ public class GroundManager : MonoBehaviour
             return;
         float startZ = centerZ - (groundLength / 2f) + 1f;
         float endZ = centerZ + (groundLength / 2f) - 1f;
+        float minX = -(groundWidth / 2f) + 0.7f;
+        float maxX = (groundWidth / 2f) - 0.7f;
         for (int i = 0; i < woodCount; i++)
         {
+            float randomX = Random.Range(minX, maxX);
             float randomZ = Random.Range(startZ, endZ);
-            Vector3 woodPos = new Vector3(0f, 0.5f, randomZ);
-            Instantiate(woodPickupPrefab, woodPos, Quaternion.identity);
-        }
+            Vector3 woodPos = new Vector3(randomX, 0.5f, randomZ);
+            GameObject spawnedWood = Instantiate(woodPickupPrefab, woodPos, Quaternion.Euler(90f, 0f, 0f));
+            Destroy(spawnedWood, 10f);
+        } 
     } 
 }
