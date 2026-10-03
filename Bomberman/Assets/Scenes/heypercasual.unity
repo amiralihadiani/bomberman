@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 77058852}
   - component: {fileID: 77058851}
   - component: {fileID: 77058850}
+  - component: {fileID: 77058853}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -211,6 +212,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &77058853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 77058849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a453c4682db5c14b961e0b2cdad9524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
+  player: {fileID: 2029469285}
+  offset: {x: 0, y: 6, z: -10}
+  smoothSpeed: 5
 --- !u!1 &158053268
 GameObject:
   m_ObjectHideFlags: 0
@@ -299,6 +315,7 @@ GameObject:
   m_Component:
   - component: {fileID: 415271285}
   - component: {fileID: 415271284}
+  - component: {fileID: 415271286}
   m_Layer: 0
   m_Name: GroundManager
   m_TagString: Untagged
@@ -329,6 +346,8 @@ MonoBehaviour:
   gapChance: 0.6
   woodYOffset: 0.6
   roadWidth: 4
+  grounds: []
+  groundLength: 0
 --- !u!4 &415271285
 Transform:
   m_ObjectHideFlags: 0
@@ -344,6 +363,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &415271286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 415271283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce30330f50e45c742bf51af730dbb6f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GroundManager
+  player: {fileID: 2029469285}
+  woodPickupPrefab: {fileID: 2885262617620004430, guid: 24f6901c2f624e047b5482c016a823b5, type: 3}
+  bridgeWoodLength: 0.4
+  groundMaterial: {fileID: 2100000, guid: 9583315b70b898e44a0018b8a0320a0f, type: 2}
+  groundWidth: 20
+  groundLength: 10
+  initialGroundsCount: 5
+  chanceOfGap: 0.6
+  minGapLength: 3
+  maxGapLength: 7
 --- !u!1 &1272849094
 GameObject:
   m_ObjectHideFlags: 0
@@ -519,7 +560,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!135 &2029469282
 SphereCollider:
@@ -608,7 +649,7 @@ Transform:
   m_GameObject: {fileID: 2029469280}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.809475, z: 0.33}
+  m_LocalPosition: {x: 0, y: 1, z: 0.33}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -628,7 +669,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 766f217a1c3858d499db5f4b0ca337d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::movement_player
-  moveSpeed: 8
+  forwardSpeed: 8
+  sideSpeed: 6
 --- !u!114 &2029469287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -642,12 +684,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerBridgeCollector
   bridgeWoodPrefab: {fileID: 6583155941795086567, guid: c007b6c488fcfb441b1de876e304de65, type: 3}
-  groundCheckPoint: {fileID: 2029469285}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   rayDistance: 1.5
-  groundMoveSpeed: 4
+  playerMoveSpeed: 8
+  collectedWoodCount: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
