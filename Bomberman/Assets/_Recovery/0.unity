@@ -394,7 +394,6 @@ MonoBehaviour:
   bridgeYPosition: 0
   woodRotation: {x: 0, y: 0, z: 0}
   maxPlanksOnBridge: 10
-  destroyDelay: 1.5
   collectedWoodCount: 0
 --- !u!4 &445018634
 Transform:
@@ -441,7 +440,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BridgeTilePool
   bridgeTilePrefab: {fileID: 6583155941795086567, guid: c007b6c488fcfb441b1de876e304de65, type: 3}
-  poolSize: 5
+  poolSize: 11
 --- !u!4 &1132632995
 Transform:
   m_ObjectHideFlags: 0
