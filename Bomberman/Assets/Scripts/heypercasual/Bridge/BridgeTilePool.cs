@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class BridgeTilePool : MonoBehaviour
 {
-    [SerializeField] private GameObject bridgeTilePrefab;
+  [SerializeField] private GameObject bridgeTilePrefab; 
     [SerializeField] private int poolSize = 50;
     private GameObject[] tilePool;
+    private int poolIndex = 0;
     private void Awake()
     {
         CreatePool();
@@ -42,7 +43,16 @@ public class BridgeTilePool : MonoBehaviour
                 return tilePool[i];
             }
         }
-        Debug.LogWarning("BRIDGE TILE POOL IS FULL!");
-        return null;
+        GameObject recycledTile = tilePool[poolIndex];
+        if (recycledTile == null)
+        {
+            recycledTile = InstantiateTile(poolIndex);
+            tilePool[poolIndex] = recycledTile;
+        }
+        recycledTile.transform.position = position;
+        recycledTile.transform.rotation = Quaternion.Euler(rotationEuler);
+        recycledTile.SetActive(true);
+        poolIndex = (poolIndex + 1) % poolSize;
+        return recycledTile;
     } 
 }

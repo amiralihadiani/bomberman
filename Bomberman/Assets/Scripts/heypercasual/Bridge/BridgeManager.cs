@@ -4,19 +4,19 @@ using System.Collections.Generic;
 public class BridgeManager : MonoBehaviour
 {
     [SerializeField] private Transform player;
-    [SerializeField] private BridgeTilePool bridgeTilePool; 
+    [SerializeField] private BridgeTilePool bridgeTilePool;
     [SerializeField] private float woodLength = 0.4f;      
-    [SerializeField] private float bridgeYPosition = -0.5f;  
+    [SerializeField] private float bridgeYPosition = -0.5f;   
     [SerializeField] private Vector3 woodRotation = new Vector3(0f, 0f, 0f);
     [SerializeField] private int maxPlanksOnBridge = 10;    
-    [SerializeField] private int collectedWoodCount = 0;     
+    [SerializeField] private int collectedWoodCount = 0;    
     private Queue<GameObject> activeBridgePlanks = new Queue<GameObject>();
     private float nextSpawnZ = 0f;
     private bool isBuildingBridge = false;
     public void AddWood()
     {
         collectedWoodCount++;
-        Debug.Log("Wood Count: " + collectedWoodCount);
+        Debug.Log("Wood Collected! Total: " + collectedWoodCount);
     }
     private void Update()
     {
@@ -57,7 +57,7 @@ public class BridgeManager : MonoBehaviour
             GameObject oldestPlank = activeBridgePlanks.Dequeue();
             if (oldestPlank != null)
             {
-                oldestPlank.SetActive(false); 
+                oldestPlank.SetActive(false);
             }
         }
         Vector3 spawnPos = new Vector3(0f, bridgeYPosition, nextSpawnZ);
@@ -78,5 +78,5 @@ public class BridgeManager : MonoBehaviour
                 plank.SetActive(false);
             }
         }
-    } 
+    }
 }
