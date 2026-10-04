@@ -4,17 +4,19 @@ public class GroundManager : MonoBehaviour
 {
     [SerializeField] private Transform player;
     [SerializeField] private GameObject woodPickupPrefab;
-    [SerializeField] private float bridgeWoodLength = 0.4f;
-    [SerializeField] private int woodPoolSize = 50;
     [SerializeField] private Material groundMaterial;
     [SerializeField] private float groundWidth = 6f;
     [SerializeField] private float groundLength = 10f;
+    [SerializeField] private float bridgeWoodLength = 0.4f;
     [SerializeField] private int initialGroundsCount = 3;
     [SerializeField] private float chanceOfGap = 0.5f;
     [SerializeField] private float minGapLength = 4f;
     [SerializeField] private float maxGapLength = 8f;
+    [SerializeField] private int woodPoolSize = 50;
+    [SerializeField] private int maxPickupsOnGround = 10; 
     private float spawnZPosition = 0f;
     private List<GameObject> woodPool = new List<GameObject>();
+    private Queue<GameObject> activePickupsOnGround = new Queue<GameObject>(); 
     private void Start()
     {
         CreateWoodPool();
@@ -25,8 +27,7 @@ public class GroundManager : MonoBehaviour
     }
     private void Update()
     {
-        if (player != null &&
-            player.position.z + 40f > spawnZPosition)
+        if (player != null && player.position.z + 40f > spawnZPosition)
         {
             bool shouldHaveGap = Random.value < chanceOfGap;
             SpawnGroundPiece(shouldHaveGap);
@@ -78,34 +79,50 @@ public class GroundManager : MonoBehaviour
     }
     private void SpawnWoodPickups(float centerZ, int woodCount)
     {
-        if (woodPickupPrefab == null)
-            return;
-        if (woodCount <= 0)
+        if (woodPickupPrefab == null || woodCount <= 0)
             return;
         float startZ = centerZ - (groundLength / 2f) + 1f;
         float endZ = centerZ + (groundLength / 2f) - 1f;
         float minX = -(groundWidth / 2f) + 0.5f;
         float maxX = (groundWidth / 2f) - 0.5f;
-        int spawnedCount = 0;
+
+        for (int i = 0; i < woodCount; i++)
+        {
+            if (activePickupsOnGround.Count >= maxPickupsOnGround)
+            {
+                GameObject oldestWood = activePickupsOnGround.Dequeue();
+                if (oldestWood != null)
+                {
+                    oldestWood.SetActive(false);
+                }
+            }
+            GameObject woodToSpawn = GetAvailableWoodFromPool();
+            if (woodToSpawn != null)
+            {
+                float randomX = Random.Range(minX, maxX);
+                float randomZ = Random.Range(startZ, endZ);
+                Vector3 woodPosition = new Vector3(randomX, 0.5f, randomZ);
+                woodToSpawn.transform.position = woodPosition;
+                woodToSpawn.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                woodToSpawn.SetActive(true);
+                activePickupsOnGround.Enqueue(woodToSpawn);
+            }
+        }
+    }
+    private GameObject GetAvailableWoodFromPool()
+    {
         for (int i = 0; i < woodPool.Count; i++)
         {
-            if (spawnedCount >= woodCount)
-                break;
-            GameObject wood = woodPool[i];
-            if (wood.activeSelf)
-                continue;
-            float randomX = Random.Range(minX, maxX);
-            float randomZ = Random.Range(startZ, endZ);
-            Vector3 woodPosition = new Vector3(randomX, 0.5f, randomZ);
-            wood.transform.position =
-                woodPosition;
-            wood.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-            wood.SetActive(true);
-            spawnedCount++;
+            if (woodPool[i] == null)
+            {
+                woodPool[i] = Instantiate(woodPickupPrefab, transform);
+                woodPool[i].SetActive(false);
+            }
+            if (!woodPool[i].activeInHierarchy)
+            {
+                return woodPool[i];
+            }
         }
-        if (spawnedCount < woodCount)
-        {
-            Debug.LogWarning("Wood Pool is not large enough! " + "Required: " + woodCount + " | Spawned: " + spawnedCount);
-        }
+        return null;
     }
 }
