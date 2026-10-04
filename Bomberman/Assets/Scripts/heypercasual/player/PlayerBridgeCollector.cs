@@ -28,7 +28,7 @@ public class PlayerBridgeCollector : MonoBehaviour
         if (other.CompareTag("WoodPickup"))
         {
             collectedWoodCount++;
-            Destroy(other.gameObject);
+            other.gameObject.SetActive(false);
         }
     }
     private void Update()

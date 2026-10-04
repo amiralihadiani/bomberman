@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5241228788243447842}
   - component: {fileID: -7786718451655452746}
   m_Layer: 6
-  m_Name: BridgeWood
+  m_Name: BridgeTilePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
