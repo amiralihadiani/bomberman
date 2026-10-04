@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 77058852}
   - component: {fileID: 77058851}
   - component: {fileID: 77058850}
+  - component: {fileID: 77058853}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -211,6 +212,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &77058853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 77058849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a453c4682db5c14b961e0b2cdad9524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
+  player: {fileID: 2029469285}
+  offset: {x: 0, y: 9.55, z: -18.6}
+  smoothSpeed: 5
 --- !u!1 &158053268
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,16 +335,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GroundPool
   player: {fileID: 2029469285}
-  groundPrefab: {fileID: 1983554942480217888, guid: 5da6dba25f5bfd444a862e58a4da9899, type: 3}
-  woodPickupPrefab: {fileID: 2885262617620004430, guid: 24f6901c2f624e047b5482c016a823b5, type: 3}
-  playerCollector: {fileID: 2029469287}
-  groundCount: 3
-  moveSpeed: 3
-  minGap: 2
-  maxGap: 8
+  groundPrefab: {fileID: 6815482631907156999, guid: 1be506b473c8c63499372859befb8b45, type: 3}
+  poolSize: 7
+  groundLength: 10
+  safeStartGrounds: 3
+  minGap: 4
+  maxGap: 7
   gapChance: 0.6
-  woodYOffset: 0.6
-  roadWidth: 4
+  woodPool: {fileID: 1906801247}
+  woodSpacing: 1
 --- !u!4 &415271285
 Transform:
   m_ObjectHideFlags: 0
@@ -339,6 +354,103 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &445018632
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 445018634}
+  - component: {fileID: 445018633}
+  m_Layer: 0
+  m_Name: BridgeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &445018633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 445018632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f806ad33ad7449acf2d6e6583915a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BridgeManager
+  player: {fileID: 2029469285}
+  bridgeTilePool: {fileID: 1132632994}
+  woodLength: 1
+  bridgeYPosition: 0
+  woodRotation: {x: 0, y: 0, z: 0}
+  maxPlanksOnBridge: 10
+  collectedWoodCount: 0
+--- !u!4 &445018634
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 445018632}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1132632993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1132632995}
+  - component: {fileID: 1132632994}
+  m_Layer: 0
+  m_Name: BridgeTilePool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1132632994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132632993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f38bc83830a6be41ab739b4dc33b2ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BridgeTilePool
+  bridgeTilePrefab: {fileID: 6583155941795086567, guid: c007b6c488fcfb441b1de876e304de65, type: 3}
+  poolSize: 10
+--- !u!4 &1132632995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132632993}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.5, y: 1, z: 0.33}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -472,6 +584,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2029469285}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1906801246
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1906801248}
+  - component: {fileID: 1906801247}
+  m_Layer: 0
+  m_Name: WoodPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1906801247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1906801246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cd7feb118557c24abae50c859e7e030, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WoodPool
+  woodPrefab: {fileID: 2885262617620004430, guid: 24f6901c2f624e047b5482c016a823b5, type: 3}
+  poolSize: 20
+--- !u!4 &1906801248
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1906801246}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.5, y: 1, z: 0.33}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2029469280
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,7 +644,6 @@ GameObject:
   - component: {fileID: 2029469282}
   - component: {fileID: 2029469281}
   - component: {fileID: 2029469286}
-  - component: {fileID: 2029469287}
   m_Layer: 0
   m_Name: player
   m_TagString: Player
@@ -504,7 +661,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -519,8 +676,8 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Constraints: 112
+  m_CollisionDetection: 1
 --- !u!135 &2029469282
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -608,7 +765,7 @@ Transform:
   m_GameObject: {fileID: 2029469280}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.809475, z: 0.33}
+  m_LocalPosition: {x: 0, y: 1, z: 0.33}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -628,26 +785,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 766f217a1c3858d499db5f4b0ca337d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::movement_player
-  moveSpeed: 8
---- !u!114 &2029469287
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2029469280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f19bedf35be08c42b06e910eb858019, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerBridgeCollector
-  bridgeWoodPrefab: {fileID: 6583155941795086567, guid: c007b6c488fcfb441b1de876e304de65, type: 3}
-  groundCheckPoint: {fileID: 2029469285}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  rayDistance: 1.5
-  groundMoveSpeed: 4
+  forwardSpeed: 8
+  sideSpeed: 6
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -657,3 +796,6 @@ SceneRoots:
   - {fileID: 415271285}
   - {fileID: 2029469285}
   - {fileID: 314034508}
+  - {fileID: 1906801248}
+  - {fileID: 445018634}
+  - {fileID: 1132632995}

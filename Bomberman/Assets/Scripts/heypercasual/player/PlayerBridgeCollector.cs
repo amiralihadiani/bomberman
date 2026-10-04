@@ -2,96 +2,87 @@ using UnityEngine;
 
 public class PlayerBridgeCollector : MonoBehaviour
 { 
-    [SerializeField] private GameObject bridgeWoodPrefab; 
-    [SerializeField] private Transform groundCheckPoint;  
-    [SerializeField] private LayerMask groundLayer;      
-    [SerializeField] private float rayDistance = 0.2f; 
-    [SerializeField] private float groundMoveSpeed = 8f; 
-    private int collectedWoodCount = 0;
+    [SerializeField] private GameObject bridgeWoodPrefab;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float rayDistance = 2f;
+    [SerializeField] private float playerMoveSpeed = 8f;
+    [SerializeField] private int collectedWoodCount = 0;
     private bool isBuildingBridge = false;
-    private float stepZDistance = 0.4f;
+    private float stepZDistance = 1f;
     private float timer = 0f;
-    private float fixedZPosition; 
-    private float fixedBridgeYPosition; 
-    public float StepDistance => stepZDistance;
+    private float fixedBridgeYPosition;
+    private float nextPlankZ;
     public int CollectedWoodCount => collectedWoodCount;
     private void Start()
     {
-        fixedZPosition = transform.position.z;
         if (bridgeWoodPrefab != null)
         {
             stepZDistance = bridgeWoodPrefab.transform.localScale.z;
-            if (stepZDistance <= 0.05f) stepZDistance = 0.4f;
+            if (stepZDistance <= 0.05f)
+                stepZDistance = 1f;
         }
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("WoodPickup"))
         {
             collectedWoodCount++;
-            Destroy(other.gameObject);
+            other.gameObject.SetActive(false);
         }
     }
     private void Update()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y, fixedZPosition);
         CheckAndBuildBridge();
     }
     private void CheckAndBuildBridge()
     {
-        Vector3 origin = groundCheckPoint != null ? groundCheckPoint.position : transform.position;
-        bool isGrounded = Physics.Raycast(origin, Vector3.down, rayDistance, groundLayer);
-        if (!isGrounded) 
+        Vector3 checkOrigin = transform.position + Vector3.forward * 0.6f;
+        bool isGrounded = Physics.Raycast(checkOrigin, Vector3.down, rayDistance, groundLayer);
+        if (!isGrounded)
         {
             if (collectedWoodCount > 0)
             {
                 if (!isBuildingBridge)
                 {
-                    fixedBridgeYPosition = transform.position.y - 0.45f;
+                    fixedBridgeYPosition = transform.position.y - 0.4f;
+                    nextPlankZ = transform.position.z + stepZDistance;
+                    isBuildingBridge = true;
+                    timer = 0f;
                 }
-                float timeBetweenPlanks = stepZDistance / groundMoveSpeed;
+                float timeBetweenPlanks = stepZDistance / playerMoveSpeed;
                 timer += Time.deltaTime;
-
-                if (!isBuildingBridge || timer >= timeBetweenPlanks)
+                if (timer >= timeBetweenPlanks)
                 {
                     BuildPlank();
                     timer = 0f;
                 }
             }
-            else
-            {
-                isBuildingBridge = false;
-            }
         }
         else
         {
             isBuildingBridge = false;
-            timer = 0f; 
+            timer = 0f;
         }
     }
     private void BuildPlank()
     {
+        if (collectedWoodCount <= 0)
+            return;
         collectedWoodCount--;
-        Vector3 spawnPosition = new Vector3(transform.position.x, fixedBridgeYPosition, transform.position.z + stepZDistance);
+        Vector3 spawnPosition = new Vector3(transform.position.x, fixedBridgeYPosition, nextPlankZ);
         GameObject plank = Instantiate(bridgeWoodPrefab, spawnPosition, Quaternion.identity);
-        PlankMovement moveScript = plank.GetComponent<PlankMovement>();
-        if (moveScript != null)
+        nextPlankZ += stepZDistance;
+        int groundLayerIndex = LayerMask.NameToLayer("Ground");
+        if (groundLayerIndex != -1)
         {
-            moveScript.moveSpeed = groundMoveSpeed;
+            plank.layer = groundLayerIndex;
         }
-        plank.layer = LayerMask.NameToLayer("Ignore Raycast");
-        isBuildingBridge = true;
-    }
-    public int CalculateRequiredWood(float gapLength)
-    {
-        return Mathf.CeilToInt(gapLength / stepZDistance);
     }
     private void OnDrawGizmos()
     {
-        if (groundCheckPoint != null)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawRay(groundCheckPoint.position, Vector3.down * rayDistance);
-        }
+        Vector3 checkOrigin = transform.position + Vector3.forward * 0.6f;
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(checkOrigin, Vector3.down * rayDistance);
     } 
 }

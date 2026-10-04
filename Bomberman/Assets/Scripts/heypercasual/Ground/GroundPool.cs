@@ -4,96 +4,89 @@ public class GroundPool : MonoBehaviour
 {
     [SerializeField] private Transform player;
     [SerializeField] private GameObject groundPrefab;
-    [SerializeField] private GameObject woodPickupPrefab;
-    [SerializeField] private PlayerBridgeCollector playerCollector;
-    [SerializeField] private int groundCount = 3;
-    [SerializeField] private float moveSpeed = 8f;
-    [SerializeField] private float minGap = 2f;
-    [SerializeField] private float maxGap = 6f;
-    [SerializeField, Range(0f, 1f)] private float gapChance = 0.6f;
-    [SerializeField] private float woodYOffset = 4f; 
-    [SerializeField] private float roadWidth = 4f;  
-    private Transform[] grounds;
-    private float groundLength;
+    [SerializeField] private int poolSize = 7;
+    [SerializeField] private float groundLength = 10f;
+    [SerializeField] private int safeStartGrounds = 3;
+    [SerializeField] private float minGap = 3f;
+    [SerializeField] private float maxGap = 7f;
+    [SerializeField] private float gapChance = 0.6f;
+    [SerializeField] private WoodPool woodPool;
+    [SerializeField] private float woodSpacing = 1f;
+    private GameObject[] groundPool;
+    private int firstGroundIndex = 0;
+    private float nextGroundZ = 0f;
     private void Start()
     {
-        grounds = new Transform[groundCount];
-        GameObject firstGround = Instantiate(groundPrefab, transform);
-        grounds[0] = firstGround.transform;
-        firstGround.transform.position = transform.position;
-        Renderer renderer = firstGround.GetComponentInChildren<Renderer>();
-        groundLength = (renderer != null) ? renderer.bounds.size.z : 10f;
-        for (int i = 1; i < groundCount; i++)
-        {
-            GameObject ground = Instantiate(groundPrefab, transform);
-            grounds[i] = ground.transform;
-            Transform previousGround = grounds[i - 1];
-            float gap = GetRandomGap();
-            ground.transform.position = new Vector3(previousGround.position.x, previousGround.position.y, previousGround.position.z + groundLength + gap);
-            SpawnExactWoodForGap(previousGround, gap);
-        }
+        CreateGroundPool();
+        SpawnInitialGrounds();
     }
     private void Update()
     {
-        if (grounds == null) return;
-        MoveGrounds();
         RecycleGrounds();
     }
-    private void MoveGrounds()
+    private void CreateGroundPool()
     {
-        Vector3 movement = Vector3.back * (moveSpeed * Time.deltaTime);
-        foreach (Transform ground in grounds)
+        groundPool = new GameObject[poolSize];
+        for (int i = 0; i < poolSize; i++)
         {
-            ground.position += movement;
+            GameObject ground = Instantiate(groundPrefab, transform);
+            ground.name = "Ground_" + i;
+            int groundLayer = LayerMask.NameToLayer("Ground");
+            if (groundLayer != -1) ground.layer = groundLayer;
+
+            groundPool[i] = ground;
         }
+    }
+    private void SpawnInitialGrounds()
+    {
+        float currentZ = 0f;
+        for (int i = 0; i < poolSize; i++)
+        {
+            groundPool[i].SetActive(true);
+            groundPool[i].transform.position = new Vector3(0f, -0.5f, currentZ + (groundLength / 2f));
+            currentZ += groundLength;
+            if (i >= safeStartGrounds && Random.value < gapChance)
+            {
+                float gapLength = Random.Range(minGap, maxGap);
+                SpawnWoodForGap(currentZ - groundLength, gapLength);
+                currentZ += gapLength;
+            }
+        }
+        nextGroundZ = currentZ;
     }
     private void RecycleGrounds()
     {
-        foreach (Transform ground in grounds)
+        if (player == null) return;
+        GameObject firstGround = groundPool[firstGroundIndex];
+        float groundZ = firstGround.transform.position.z;
+        if (player.position.z > groundZ + groundLength)
         {
-            if (ground.position.z < player.position.z - groundLength)
-            {
-                for (int i = ground.childCount - 1; i >= 0; i--)
-                {
-                    Destroy(ground.GetChild(i).gameObject);
-                }
-                Transform lastGround = GetLastGround();
-                float gap = GetRandomGap();
-                ground.position = new Vector3(lastGround.position.x, lastGround.position.y, lastGround.position.z + groundLength + gap);
-                SpawnExactWoodForGap(ground, gap);
-            }
+            MoveGroundToFront(firstGround);
+            firstGroundIndex = (firstGroundIndex + 1) % poolSize;
         }
     }
-    private void SpawnExactWoodForGap(Transform ground, float gap)
+    private void MoveGroundToFront(GameObject ground)
     {
-        if (woodPickupPrefab == null) return;
-        float stepDistance = (playerCollector != null) ? playerCollector.StepDistance : 0.5f;
-        int neededWood = (gap > 0f) ? Mathf.CeilToInt(gap / stepDistance) + Random.Range(1, 3) : Random.Range(1, 3);
-        float spacing = (groundLength - 2f) / Mathf.Max(neededWood, 1);
-        for (int i = 0; i < neededWood; i++)
+        ground.transform.position = new Vector3(0f, -0.5f, nextGroundZ + (groundLength / 2f));
+        nextGroundZ += groundLength;
+        if (Random.value < gapChance)
         {
-            float zPos = (-groundLength / 2f + 1f) + (i * spacing);
-            float xOffset = Random.Range(-roadWidth / 2f, roadWidth / 2f);
-            Vector3 pickupPos = new Vector3(ground.position.x + xOffset, ground.position.y + woodYOffset, ground.position.z + zPos);
-            GameObject pickup = Instantiate(woodPickupPrefab, pickupPos, Quaternion.identity, ground);
-            pickup.tag = "WoodPickup";
+            float gapLength = Random.Range(minGap, maxGap);
+            SpawnWoodForGap(nextGroundZ - groundLength, gapLength);
+            nextGroundZ += gapLength;
         }
     }
-    private Transform GetLastGround()
+    private void SpawnWoodForGap(float groundStartZ, float gapLength)
     {
-        Transform lastGround = grounds[0];
-        foreach (Transform ground in grounds)
+        if (woodPool == null) return;
+        int woodCount = Random.Range(5, 10); 
+        float startZ = groundStartZ + 1f;
+        for (int i = 0; i < woodCount; i++)
         {
-            if (ground.position.z > lastGround.position.z)
-            {
-                lastGround = ground;
-            }
+            GameObject wood = woodPool.GetWood();
+            if (wood == null) return;
+            wood.transform.position = new Vector3(0f, 0.5f, startZ + (i * woodSpacing));
+            wood.tag = "WoodPickup";
         }
-        return lastGround;
-    }
-    private float GetRandomGap()
-    {
-        if (Random.value > gapChance) return 0f;
-        return Random.Range(minGap, maxGap);
     } 
 }
