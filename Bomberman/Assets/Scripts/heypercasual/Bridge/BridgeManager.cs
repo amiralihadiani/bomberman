@@ -122,4 +122,37 @@ public class BridgeManager : MonoBehaviour
             GameManager.Instance.GameOver();
         }
     }
+    public void AddWoodAmount(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            AddWood(); 
+        }
+    }
+    public void RemoveWoodAmount(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            if (collectedWoodCount > 0)
+            {
+                collectedWoodCount--;
+            }
+        }
+    }
+    public void MultiplyWood(int factor)
+    {
+        int currentCount = collectedWoodCount; 
+        int newTotal = currentCount * factor;
+        int amountToAdd = newTotal - currentCount;
+
+        AddWoodAmount(amountToAdd);
+    }
+    public void DivideWood(int divisor)
+    {
+        if (divisor <= 0) return;
+        int currentCount = collectedWoodCount;
+        int newTotal = currentCount / divisor;
+        int amountToRemove = currentCount - newTotal;
+        RemoveWoodAmount(amountToRemove);
+    }
 }
