@@ -10,10 +10,12 @@ public class BridgeManager : MonoBehaviour
     [SerializeField] private Vector3 woodRotation = new Vector3(0f, 0f, 0f);
     [SerializeField] private int maxPlanksOnBridge = 10;
     [SerializeField] private float destroyDelay = 1.5f; 
+    [SerializeField] private float gameOverDelay = 1.0f; 
     [SerializeField] private int collectedWoodCount = 0;
     private Queue<GameObject> activeBridgePlanks = new Queue<GameObject>();
     private float nextSpawnZ = 0f;
     private bool isBuildingBridge = false;
+    private Coroutine gameOverCoroutine;
     private void Start()
     {
         if (player == null)
@@ -52,9 +54,21 @@ public class BridgeManager : MonoBehaviour
             {
                 BuildPlank();
             }
+            if (collectedWoodCount <= 0 && player.position.z >= nextSpawnZ - 0.1f)
+            {
+                if (gameOverCoroutine == null)
+                {
+                    gameOverCoroutine = StartCoroutine(TriggerGameOverWithDelay(gameOverDelay));
+                }
+            }
         }
         else
         {
+            if (gameOverCoroutine != null)
+            {
+                StopCoroutine(gameOverCoroutine);
+                gameOverCoroutine = null;
+            }
             if (isBuildingBridge)
             {
                 ClearActiveBridgePlanks();
@@ -100,4 +114,12 @@ public class BridgeManager : MonoBehaviour
             plank.SetActive(false);
         }
     } 
+    private IEnumerator TriggerGameOverWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.GameOver();
+        }
+    }
 }
