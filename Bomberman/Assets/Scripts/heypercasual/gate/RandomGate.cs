@@ -3,7 +3,7 @@ using TMPro;
 public enum GateType { Add, Subtract, Multiply, Divide }
 public class RandomGate : MonoBehaviour
 {
-     [SerializeField] private TextMeshPro gateText;
+    [SerializeField] private TextMeshPro gateText;
     [SerializeField] private MeshRenderer gateMeshRenderer;
     [SerializeField] private Color addColor = Color.green;        
     [SerializeField] private Color subtractColor = Color.red;      
@@ -88,10 +88,10 @@ public class RandomGate : MonoBehaviour
                 bridgeManager.RemoveWoodAmount(Value);
                 break;
             case GateType.Multiply:
-                bridgeManager.MultiplyWood(Value);
+                bridgeManager.MultiplyWoodAmount(Value); 
                 break;
             case GateType.Divide:
-                bridgeManager.DivideWood(Value);
+                bridgeManager.DivideWoodAmount(Value);  
                 break;
         }
     } 

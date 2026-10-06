@@ -33,6 +33,14 @@ public class BridgeManager : MonoBehaviour
         collectedWoodCount++;
         Debug.Log("Wood Collected! Total: " + collectedWoodCount);
     }
+    public void RemoveWood()
+    {
+        if (collectedWoodCount > 0)
+        {
+            collectedWoodCount--;
+            Debug.Log("Wood Removed! Remaining: " + collectedWoodCount);
+        }
+    }
     private void Update()
     {
         CheckAndBuildBridge();
@@ -126,33 +134,34 @@ public class BridgeManager : MonoBehaviour
     {
         for (int i = 0; i < amount; i++)
         {
-            AddWood(); 
+            AddWood();
         }
     }
+
     public void RemoveWoodAmount(int amount)
     {
         for (int i = 0; i < amount; i++)
         {
             if (collectedWoodCount > 0)
             {
-                collectedWoodCount--;
+                RemoveWood();
             }
         }
     }
-    public void MultiplyWood(int factor)
-    {
-        int currentCount = collectedWoodCount; 
-        int newTotal = currentCount * factor;
-        int amountToAdd = newTotal - currentCount;
 
+    public void MultiplyWoodAmount(int factor)
+    {
+        int currentCount = collectedWoodCount;
+        int amountToAdd = (currentCount * factor) - currentCount;
         AddWoodAmount(amountToAdd);
     }
-    public void DivideWood(int divisor)
+
+    public void DivideWoodAmount(int divisor)
     {
         if (divisor <= 0) return;
         int currentCount = collectedWoodCount;
-        int newTotal = currentCount / divisor;
-        int amountToRemove = currentCount - newTotal;
+        int targetCount = currentCount / divisor;
+        int amountToRemove = currentCount - targetCount;
         RemoveWoodAmount(amountToRemove);
-    }
+    } 
 }
