@@ -13,13 +13,13 @@ public class movement_player : MonoBehaviour
         {
             playmovementrigidbody.interpolation = RigidbodyInterpolation.Interpolate;
             playmovementrigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            playmovementrigidbody.constraints = RigidbodyConstraints.FreezeRotation;
         }
     }
     private void FixedUpdate()
     {
-       playerMovement();
+        playerMovement();
     }
-
     private void playerMovement()
     {
         if (playmovementrigidbody == null)
@@ -36,8 +36,9 @@ public class movement_player : MonoBehaviour
                 horizontalInput = 1f;
             }
         }
-        Vector3 velocity = playmovementrigidbody.linearVelocity;
-        Vector3 targetVelocity = new Vector3(horizontalInput * sideSpeed, velocity.y, forwardSpeed);
+        Vector3 currentVelocity = playmovementrigidbody.linearVelocity;
+        float yVelocity = currentVelocity.y > 0.1f ? 0f : currentVelocity.y;
+        Vector3 targetVelocity = new Vector3(horizontalInput * sideSpeed, yVelocity, forwardSpeed);
         playmovementrigidbody.linearVelocity = targetVelocity;
-    }
+    } 
 }
