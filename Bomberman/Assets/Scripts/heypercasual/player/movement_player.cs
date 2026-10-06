@@ -6,6 +6,7 @@ public class movement_player : MonoBehaviour
     [SerializeField] private float forwardSpeed = 8f;
     [SerializeField] private float sideSpeed = 6f;
     private Rigidbody playmovementrigidbody;
+    private bool isFinished = false;
     private void Start()
     {
         playmovementrigidbody = GetComponent<Rigidbody>();
@@ -18,7 +19,10 @@ public class movement_player : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        playerMovement();
+        if (!isFinished)
+        {
+            playerMovement();
+        }
     }
     private void playerMovement()
     {
@@ -40,5 +44,26 @@ public class movement_player : MonoBehaviour
         float yVelocity = currentVelocity.y > 0.1f ? 0f : currentVelocity.y;
         Vector3 targetVelocity = new Vector3(horizontalInput * sideSpeed, yVelocity, forwardSpeed);
         playmovementrigidbody.linearVelocity = targetVelocity;
+    } 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("FinishLine") && !isFinished)
+        {
+            isFinished = true;
+            if (playmovementrigidbody != null)
+            {
+                playmovementrigidbody.linearVelocity = Vector3.zero;
+                playmovementrigidbody.isKinematic = true; 
+            }
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.LevelCompleted(); 
+            }
+            else
+            {
+                Debug.Log("مرحله با موفقیت تمام شد!");
+            }
+            this.enabled = false;
+        }
     } 
 }
