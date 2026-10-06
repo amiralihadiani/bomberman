@@ -4,7 +4,6 @@ using System.Collections;
 using TMPro;
 public class BridgeManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI woodCountText; 
     [SerializeField] private Transform player;
     [SerializeField] private BridgeTilePool bridgeTilePool;
     [SerializeField] private float woodLength = 0.4f;
@@ -29,24 +28,11 @@ public class BridgeManager : MonoBehaviour
         {
             bridgeTilePool = FindObjectOfType<BridgeTilePool>();
         }
-        UpdateWoodUI();
-    }
-    private void Update()
-    {
-        CheckAndBuildBridge();
-    }
-    private void UpdateWoodUI()
-    {
-        if (woodCountText != null)
-        {
-            woodCountText.text = collectedWoodCount.ToString();
-        }
     }
     public void AddWood()
     {
         collectedWoodCount++;
         Debug.Log("Wood Collected! Total: " + collectedWoodCount);
-        UpdateWoodUI();
     }
     public void RemoveWood()
     {
@@ -54,10 +40,12 @@ public class BridgeManager : MonoBehaviour
         {
             collectedWoodCount--;
             Debug.Log("Wood Removed! Remaining: " + collectedWoodCount);
-            UpdateWoodUI();
         }
     }
-
+    private void Update()
+    {
+        CheckAndBuildBridge();
+    }
     private void CheckAndBuildBridge()
     {
         if (player == null || bridgeTilePool == null) return;
@@ -90,7 +78,6 @@ public class BridgeManager : MonoBehaviour
                 StopCoroutine(gameOverCoroutine);
                 gameOverCoroutine = null;
             }
-
             if (isBuildingBridge)
             {
                 ClearActiveBridgePlanks();
@@ -101,7 +88,6 @@ public class BridgeManager : MonoBehaviour
     private void BuildPlank()
     {
         collectedWoodCount--;
-        UpdateWoodUI();
         if (activeBridgePlanks.Count >= maxPlanksOnBridge)
         {
             GameObject oldestPlank = activeBridgePlanks.Dequeue();
@@ -152,6 +138,7 @@ public class BridgeManager : MonoBehaviour
             AddWood();
         }
     }
+
     public void RemoveWoodAmount(int amount)
     {
         for (int i = 0; i < amount; i++)
@@ -162,12 +149,14 @@ public class BridgeManager : MonoBehaviour
             }
         }
     }
+
     public void MultiplyWoodAmount(int factor)
     {
         int currentCount = collectedWoodCount;
         int amountToAdd = (currentCount * factor) - currentCount;
         AddWoodAmount(amountToAdd);
     }
+
     public void DivideWoodAmount(int divisor)
     {
         if (divisor <= 0) return;
@@ -176,4 +165,4 @@ public class BridgeManager : MonoBehaviour
         int amountToRemove = currentCount - targetCount;
         RemoveWoodAmount(amountToRemove);
     } 
-} 
+}

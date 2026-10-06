@@ -7,6 +7,7 @@ TagManager:
   - ground
   - WoodPickup
   - GroundMesh
+  - FinishLine
   layers:
   - Default
   - TransparentFX
