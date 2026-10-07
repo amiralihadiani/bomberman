@@ -16,19 +16,19 @@ public class RandomGate : MonoBehaviour
     {
         gateCollider = GetComponent<Collider>();
     }
-    private void OnEnable()
-    {
-        if (gateMeshRenderer != null) gateMeshRenderer.enabled = true;
-        if (gateCollider != null) gateCollider.enabled = true;
-        RandomizeGate();
-    }
     public void RandomizeGate()
     {
         CurrentType = (GateType)Random.Range(0, 4);
         Value = GetRandomValueForType(CurrentType);
         UpdateGateVisuals();
     }
-    private int GetRandomValueForType(GateType type)
+    public void SetGateValues(GateType type, int value)
+    {
+        CurrentType = type;
+        Value = value;
+        UpdateGateVisuals();
+    }
+    public int GetRandomValueForType(GateType type)
     {
         switch (type)
         {
@@ -62,14 +62,8 @@ public class RandomGate : MonoBehaviour
                 targetColor = divideColor;
                 break;
         }
-        if (gateText != null)
-        {
-            gateText.text = symbol + Value;
-        }
-        if (gateMeshRenderer != null)
-        {
-            gateMeshRenderer.material.color = targetColor;
-        }
+        if (gateText != null) gateText.text = symbol + Value;
+        if (gateMeshRenderer != null) gateMeshRenderer.material.color = targetColor;
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -82,24 +76,17 @@ public class RandomGate : MonoBehaviour
             }
             if (gateMeshRenderer != null) gateMeshRenderer.enabled = false;
             if (gateCollider != null) gateCollider.enabled = false;
+            if (gateText != null) gateText.enabled = false;
         }
     }
     private void ApplyGateEffect(BridgeManager bridgeManager)
     {
         switch (CurrentType)
         {
-            case GateType.Add:
-                bridgeManager.AddWoodAmount(Value);
-                break;
-            case GateType.Subtract:
-                bridgeManager.RemoveWoodAmount(Value);
-                break;
-            case GateType.Multiply:
-                bridgeManager.MultiplyWoodAmount(Value); 
-                break;
-            case GateType.Divide:
-                bridgeManager.DivideWoodAmount(Value);  
-                break;
+            case GateType.Add: bridgeManager.AddWoodAmount(Value); break;
+            case GateType.Subtract: bridgeManager.RemoveWoodAmount(Value); break;
+            case GateType.Multiply: bridgeManager.MultiplyWoodAmount(Value); break;
+            case GateType.Divide: bridgeManager.DivideWoodAmount(Value); break;
         }
     } 
 }

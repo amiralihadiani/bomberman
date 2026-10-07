@@ -12,25 +12,24 @@ public class GroundPool : MonoBehaviour
     [SerializeField] private float gapChance = 0.6f;
     [SerializeField] private WoodPool woodPool;
     [SerializeField] private float woodSpacing = 1f;
+    [SerializeField] private GameObject gatePrefab; 
+    [SerializeField] private float gateSpawnChance = 0.4f; 
     [SerializeField] private GameObject finishLinePrefab;
-    [SerializeField] private int totalGroundsToFinish = 15; 
+    [SerializeField] private int totalGroundsToFinish = 15;
     private GameObject[] groundPool;
     private int firstGroundIndex = 0;
     private float nextGroundZ = 0f;
-    private int spawnedGroundCount = 0; 
-    private bool isFinishLineSpawned = false; 
-
+    private int spawnedGroundCount = 0;
+    private bool isFinishLineSpawned = false;
     private void Start()
     {
         CreateGroundPool();
         SpawnInitialGrounds();
     }
-
     private void Update()
     {
         RecycleGrounds();
     }
-
     private void CreateGroundPool()
     {
         groundPool = new GameObject[poolSize];
@@ -40,7 +39,6 @@ public class GroundPool : MonoBehaviour
             ground.name = "Ground_" + i;
             int groundLayer = LayerMask.NameToLayer("Ground");
             if (groundLayer != -1) ground.layer = groundLayer;
-
             groundPool[i] = ground;
         }
     }
@@ -50,23 +48,29 @@ public class GroundPool : MonoBehaviour
         for (int i = 0; i < poolSize; i++)
         {
             groundPool[i].SetActive(true);
-            groundPool[i].transform.position = new Vector3(0f, -0.5f, currentZ + (groundLength / 2f));
+            float groundCenterZ = currentZ + (groundLength / 2f);
+            groundPool[i].transform.position = new Vector3(0f, -0.5f, groundCenterZ);
+            spawnedGroundCount++; 
+            bool hasGap = false;
+            float gapStart = 0f;
+            float gapEnd = 0f;
             currentZ += groundLength;
-            spawnedGroundCount++;
-            CheckAndSpawnFinishLine(currentZ - groundLength);
-            if (i >= safeStartGrounds && Random.value < gapChance && !isFinishLineSpawned)
+            if (i >= safeStartGrounds && Random.value < gapChance && spawnedGroundCount < totalGroundsToFinish)
             {
+                hasGap = true;
                 float gapLength = Random.Range(minGap, maxGap);
-                SpawnWoodForGap(currentZ - groundLength, gapLength);
+                gapStart = currentZ - groundLength;
+                gapEnd = gapStart + gapLength;
+                SpawnWoodForGap(gapStart, gapLength);
                 currentZ += gapLength;
             }
+            TrySpawnGateSafely(groundCenterZ, hasGap, gapStart, gapEnd);
         }
         nextGroundZ = currentZ;
     }
     private void RecycleGrounds()
     {
-        if (player == null) return;
-        if (isFinishLineSpawned) return;
+        if (player == null || isFinishLineSpawned) return;
         GameObject firstGround = groundPool[firstGroundIndex];
         float groundZ = firstGround.transform.position.z;
         if (player.position.z > groundZ + groundLength)
@@ -77,33 +81,54 @@ public class GroundPool : MonoBehaviour
     }
     private void MoveGroundToFront(GameObject ground)
     {
-        ground.transform.position = new Vector3(0f, -0.5f, nextGroundZ + (groundLength / 2f));
-        nextGroundZ += groundLength;
+        if (isFinishLineSpawned) return;
         spawnedGroundCount++;
-        CheckAndSpawnFinishLine(nextGroundZ - groundLength);
-        if (Random.value < gapChance && !isFinishLineSpawned)
-        {
-            float gapLength = Random.Range(minGap, maxGap);
-            SpawnWoodForGap(nextGroundZ - groundLength, gapLength);
-            nextGroundZ += gapLength;
-        }
-    }
-    private void CheckAndSpawnFinishLine(float groundStartZ)
-    {
-        if (spawnedGroundCount >= totalGroundsToFinish && !isFinishLineSpawned)
+        float groundCenterZ = nextGroundZ + (groundLength / 2f);
+        ground.transform.position = new Vector3(0f, -0.5f, groundCenterZ);
+        if (spawnedGroundCount >= totalGroundsToFinish)
         {
             isFinishLineSpawned = true;
-
             if (finishLinePrefab != null)
             {
-                Vector3 finishPos = new Vector3(0f, 0.5f, groundStartZ + groundLength - 1f);
+                Vector3 finishPos = new Vector3(0f, 0.5f, groundCenterZ);
                 GameObject finishObj = Instantiate(finishLinePrefab, finishPos, Quaternion.identity);
                 finishObj.tag = "FinishLine";
             }
-            else
+            return; 
+        }
+        bool hasGap = false;
+        float gapStart = 0f;
+        float gapEnd = 0f;
+        nextGroundZ += groundLength;
+        if (Random.value < gapChance && spawnedGroundCount < totalGroundsToFinish - 1)
+        {
+            hasGap = true;
+            float gapLength = Random.Range(minGap, maxGap);
+            gapStart = nextGroundZ - groundLength;
+            gapEnd = gapStart + gapLength;
+            SpawnWoodForGap(gapStart, gapLength);
+            nextGroundZ += gapLength;
+        }
+        TrySpawnGateSafely(groundCenterZ, hasGap, gapStart, gapEnd);
+    }
+    private void TrySpawnGateSafely(float gateZ, bool hasGap, float gapStart, float gapEnd)
+    {
+        if (gatePrefab == null || isFinishLineSpawned || spawnedGroundCount >= totalGroundsToFinish)
+        {
+            return;
+        }
+        if (hasGap)
+        {
+            float safeDistance = 0.6f;
+            if (gateZ >= (gapStart - safeDistance) && gateZ <= (gapEnd + safeDistance))
             {
-                Debug.LogWarning("Finish Line Prefab is not assigned in GroundPool!");
+                return;
             }
+        }
+        if (Random.value <= gateSpawnChance)
+        {
+            Vector3 gatePosition = new Vector3(0f, 0.5f, gateZ);
+            Instantiate(gatePrefab, gatePosition, Quaternion.identity);
         }
     }
     private void SpawnWoodForGap(float groundStartZ, float gapLength)
@@ -118,5 +143,5 @@ public class GroundPool : MonoBehaviour
             wood.transform.position = new Vector3(0f, 0.5f, startZ + (i * woodSpacing));
             wood.tag = "WoodPickup";
         }
-    } 
+    }
 }
