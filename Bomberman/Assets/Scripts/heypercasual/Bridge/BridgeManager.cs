@@ -4,6 +4,10 @@ using System.Collections;
 using TMPro;
 public class BridgeManager : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI woodCountText; 
+    [SerializeField] private Transform woodStackParent; 
+    [SerializeField] private GameObject woodPlankPrefab; 
+    [SerializeField] private float plankHeightThickness = 0.15f; 
     [SerializeField] private Transform player;
     [SerializeField] private BridgeTilePool bridgeTilePool;
     [SerializeField] private float woodLength = 0.4f;
@@ -13,6 +17,7 @@ public class BridgeManager : MonoBehaviour
     [SerializeField] private float destroyDelay = 1.5f; 
     [SerializeField] private float gameOverDelay = 1.0f; 
     [SerializeField] private int collectedWoodCount = 0;
+    private List<GameObject> visualWoodStack = new List<GameObject>(); 
     private Queue<GameObject> activeBridgePlanks = new Queue<GameObject>();
     private float nextSpawnZ = 0f;
     private bool isBuildingBridge = false;
@@ -28,24 +33,49 @@ public class BridgeManager : MonoBehaviour
         {
             bridgeTilePool = FindObjectOfType<BridgeTilePool>();
         }
+
+        UpdateWoodUIAndVisuals();
+    }
+    private void Update()
+    {
+        CheckAndBuildBridge();
+    }
+    private void UpdateWoodUIAndVisuals()
+    {
+        if (woodCountText != null)
+        {
+            woodCountText.text = collectedWoodCount.ToString();
+        }
+        if (woodStackParent == null || woodPlankPrefab == null) return;
+        while (visualWoodStack.Count < collectedWoodCount)
+        {
+            Vector3 spawnPos = woodStackParent.position + new Vector3(0f, visualWoodStack.Count * plankHeightThickness, 0f);
+            GameObject newPlank = Instantiate(woodPlankPrefab, spawnPos, woodStackParent.rotation, woodStackParent);
+            newPlank.transform.localPosition = new Vector3(0f, visualWoodStack.Count * plankHeightThickness, 0f);
+            visualWoodStack.Add(newPlank);
+        }
+        while (visualWoodStack.Count > collectedWoodCount)
+        {
+            int lastIndex = visualWoodStack.Count - 1;
+            GameObject objToDestroy = visualWoodStack[lastIndex];
+            visualWoodStack.RemoveAt(lastIndex);
+            Destroy(objToDestroy);
+        }
     }
     public void AddWood()
     {
         collectedWoodCount++;
-        Debug.Log("Wood Collected! Total: " + collectedWoodCount);
+        UpdateWoodUIAndVisuals();
     }
     public void RemoveWood()
     {
         if (collectedWoodCount > 0)
         {
             collectedWoodCount--;
-            Debug.Log("Wood Removed! Remaining: " + collectedWoodCount);
+            UpdateWoodUIAndVisuals();
         }
     }
-    private void Update()
-    {
-        CheckAndBuildBridge();
-    }
+
     private void CheckAndBuildBridge()
     {
         if (player == null || bridgeTilePool == null) return;
@@ -88,6 +118,7 @@ public class BridgeManager : MonoBehaviour
     private void BuildPlank()
     {
         collectedWoodCount--;
+        UpdateWoodUIAndVisuals(); 
         if (activeBridgePlanks.Count >= maxPlanksOnBridge)
         {
             GameObject oldestPlank = activeBridgePlanks.Dequeue();
@@ -138,7 +169,6 @@ public class BridgeManager : MonoBehaviour
             AddWood();
         }
     }
-
     public void RemoveWoodAmount(int amount)
     {
         for (int i = 0; i < amount; i++)
@@ -149,14 +179,12 @@ public class BridgeManager : MonoBehaviour
             }
         }
     }
-
     public void MultiplyWoodAmount(int factor)
     {
         int currentCount = collectedWoodCount;
         int amountToAdd = (currentCount * factor) - currentCount;
         AddWoodAmount(amountToAdd);
     }
-
     public void DivideWoodAmount(int divisor)
     {
         if (divisor <= 0) return;
@@ -164,5 +192,5 @@ public class BridgeManager : MonoBehaviour
         int targetCount = currentCount / divisor;
         int amountToRemove = currentCount - targetCount;
         RemoveWoodAmount(amountToRemove);
-    } 
+    }
 }
