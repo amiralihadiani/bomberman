@@ -11,15 +11,21 @@ public class RandomGate : MonoBehaviour
     [SerializeField] private Color divideColor = new Color(0.6f, 0f, 0.8f); 
     public GateType CurrentType { get; private set; }
     public int Value { get; private set; }
-    private void Start()
+    private Collider gateCollider;
+    private void Awake()
     {
+        gateCollider = GetComponent<Collider>();
+    }
+    private void OnEnable()
+    {
+        if (gateMeshRenderer != null) gateMeshRenderer.enabled = true;
+        if (gateCollider != null) gateCollider.enabled = true;
         RandomizeGate();
     }
     public void RandomizeGate()
     {
         CurrentType = (GateType)Random.Range(0, 4);
         Value = GetRandomValueForType(CurrentType);
-
         UpdateGateVisuals();
     }
     private int GetRandomValueForType(GateType type)
@@ -74,7 +80,8 @@ public class RandomGate : MonoBehaviour
             {
                 ApplyGateEffect(bridgeManager);
             }
-            gameObject.SetActive(false);
+            if (gateMeshRenderer != null) gateMeshRenderer.enabled = false;
+            if (gateCollider != null) gateCollider.enabled = false;
         }
     }
     private void ApplyGateEffect(BridgeManager bridgeManager)

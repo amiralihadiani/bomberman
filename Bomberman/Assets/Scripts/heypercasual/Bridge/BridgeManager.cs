@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using TMPro;
 public class BridgeManager : MonoBehaviour
 {
     [SerializeField] private Transform player;

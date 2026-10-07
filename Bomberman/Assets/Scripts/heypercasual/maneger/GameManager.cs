@@ -4,6 +4,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject winPanel;
     private void Awake()
     {
         if (Instance == null)
@@ -20,6 +21,10 @@ public class GameManager : MonoBehaviour
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(false);
+        }
+        if (winPanel != null)
+        {
+            winPanel.SetActive(false);
         }
         Time.timeScale = 1f;
     }
@@ -40,5 +45,13 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Exiting Game...");
         Application.Quit(); 
+    }
+    public void LevelCompleted()
+    {
+        if (winPanel != null)
+        {
+            winPanel.SetActive(true); 
+        }
+        Time.timeScale = 0f;
     }
 }
