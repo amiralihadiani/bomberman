@@ -1,25 +1,27 @@
 using UnityEngine;
-
+using System.Collections.Generic;
 public class GroundPool : MonoBehaviour
 {
     [SerializeField] private Transform player;
     [SerializeField] private GameObject groundPrefab;
     [SerializeField] private int poolSize = 7;
     [SerializeField] private float groundLength = 10f;
-    [SerializeField] private int safeStartGrounds = 3;
+    [SerializeField] private int safeStartGrounds = 2;
     [SerializeField] private float minGap = 3f;
     [SerializeField] private float maxGap = 7f;
-    [SerializeField] private float gapChance = 0.6f;
+    [SerializeField] private float gapChance = 0.5f;
     [SerializeField] private WoodPool woodPool;
     [SerializeField] private float woodSpacing = 1f;
     [SerializeField] private GameObject gatePrefab; 
-    [SerializeField] private float gateSpawnChance = 0.4f; 
+    [SerializeField] private int totalGatesToSpawn = 6; 
     [SerializeField] private GameObject finishLinePrefab;
     [SerializeField] private int totalGroundsToFinish = 15;
     private GameObject[] groundPool;
     private int firstGroundIndex = 0;
     private float nextGroundZ = 0f;
     private int spawnedGroundCount = 0;
+    private int spawnedGateCount = 0;
+    private int lastGateGroundIndex = -2; 
     private bool isFinishLineSpawned = false;
     private void Start()
     {
@@ -48,23 +50,23 @@ public class GroundPool : MonoBehaviour
         for (int i = 0; i < poolSize; i++)
         {
             groundPool[i].SetActive(true);
+            spawnedGroundCount++; 
             float groundCenterZ = currentZ + (groundLength / 2f);
             groundPool[i].transform.position = new Vector3(0f, -0.5f, groundCenterZ);
-            spawnedGroundCount++; 
-            bool hasGap = false;
-            float gapStart = 0f;
-            float gapEnd = 0f;
             currentZ += groundLength;
-            if (i >= safeStartGrounds && Random.value < gapChance && spawnedGroundCount < totalGroundsToFinish)
+            bool isGap = false;
+            if (i >= safeStartGrounds && Random.value < gapChance && spawnedGroundCount < totalGroundsToFinish - 1)
             {
-                hasGap = true;
+                isGap = true;
                 float gapLength = Random.Range(minGap, maxGap);
-                gapStart = currentZ - groundLength;
-                gapEnd = gapStart + gapLength;
+                float gapStart = currentZ - groundLength;
                 SpawnWoodForGap(gapStart, gapLength);
                 currentZ += gapLength;
             }
-            TrySpawnGateSafely(groundCenterZ, hasGap, gapStart, gapEnd);
+            if (!isGap && CanSpawnGate())
+            {
+                SpawnGateAtCenter(groundCenterZ);
+            }
         }
         nextGroundZ = currentZ;
     }
@@ -96,40 +98,36 @@ public class GroundPool : MonoBehaviour
             }
             return; 
         }
-        bool hasGap = false;
-        float gapStart = 0f;
-        float gapEnd = 0f;
+        bool isGap = false;
         nextGroundZ += groundLength;
         if (Random.value < gapChance && spawnedGroundCount < totalGroundsToFinish - 1)
         {
-            hasGap = true;
+            isGap = true;
             float gapLength = Random.Range(minGap, maxGap);
-            gapStart = nextGroundZ - groundLength;
-            gapEnd = gapStart + gapLength;
+            float gapStart = nextGroundZ - groundLength;
             SpawnWoodForGap(gapStart, gapLength);
             nextGroundZ += gapLength;
         }
-        TrySpawnGateSafely(groundCenterZ, hasGap, gapStart, gapEnd);
+        if (!isGap && CanSpawnGate())
+        {
+            SpawnGateAtCenter(groundCenterZ);
+        }
     }
-    private void TrySpawnGateSafely(float gateZ, bool hasGap, float gapStart, float gapEnd)
+    private bool CanSpawnGate()
     {
-        if (gatePrefab == null || isFinishLineSpawned || spawnedGroundCount >= totalGroundsToFinish)
-        {
-            return;
-        }
-        if (hasGap)
-        {
-            float safeDistance = 0.6f;
-            if (gateZ >= (gapStart - safeDistance) && gateZ <= (gapEnd + safeDistance))
-            {
-                return;
-            }
-        }
-        if (Random.value <= gateSpawnChance)
-        {
-            Vector3 gatePosition = new Vector3(0f, 0.5f, gateZ);
-            Instantiate(gatePrefab, gatePosition, Quaternion.identity);
-        }
+        if (spawnedGateCount >= totalGatesToSpawn) return false;
+        if (isFinishLineSpawned || spawnedGroundCount >= totalGroundsToFinish) return false;
+        if (spawnedGroundCount - lastGateGroundIndex < 2) return false;
+        return true;
+    }
+    private void SpawnGateAtCenter(float groundCenterZ)
+    {
+        if (gatePrefab == null) return;
+        Vector3 gatePosition = new Vector3(0f, 0.5f, groundCenterZ);
+        Instantiate(gatePrefab, gatePosition, Quaternion.identity);
+    
+        spawnedGateCount++;
+        lastGateGroundIndex = spawnedGroundCount; 
     }
     private void SpawnWoodForGap(float groundStartZ, float gapLength)
     {
@@ -143,5 +141,5 @@ public class GroundPool : MonoBehaviour
             wood.transform.position = new Vector3(0f, 0.5f, startZ + (i * woodSpacing));
             wood.tag = "WoodPickup";
         }
-    }
+    } 
 }

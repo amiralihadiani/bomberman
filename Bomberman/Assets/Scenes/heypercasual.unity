@@ -559,7 +559,7 @@ MonoBehaviour:
   woodPool: {fileID: 1906801247}
   woodSpacing: 1
   gatePrefab: {fileID: 2925361353026423946, guid: 9b6debdeccd6c6649acecb7f251f6107, type: 3}
-  gateSpawnChance: 0.4
+  totalGatesToSpawn: 4
   finishLinePrefab: {fileID: 7067136160083693516, guid: 8af38abd731b45147ab82087d4725bf9, type: 3}
   totalGroundsToFinish: 20
 --- !u!4 &415271285
