@@ -558,8 +558,10 @@ MonoBehaviour:
   gapChance: 0.6
   woodPool: {fileID: 1906801247}
   woodSpacing: 1
+  gatePrefab: {fileID: 2925361353026423946, guid: 9b6debdeccd6c6649acecb7f251f6107, type: 3}
+  totalGatesToSpawn: 4
   finishLinePrefab: {fileID: 7067136160083693516, guid: 8af38abd731b45147ab82087d4725bf9, type: 3}
-  totalGroundsToFinish: 15
+  totalGroundsToFinish: 20
 --- !u!4 &415271285
 Transform:
   m_ObjectHideFlags: 0
@@ -1745,83 +1747,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1744487859
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1981947390505935415, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_Name
-      value: gate
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 2.20282
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735764545392356694, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 641920413701160674, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-    - {fileID: 2777296831374127780, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3482071667235169856, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 5081614471686583089, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 1040537489472034507, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 7187494049190783241, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 84260054412589515, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8808955311736071653, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-  m_SourcePrefab: {fileID: 100100000, guid: a0ecb4f50b1f8e844bb7b17bb835b4b6, type: 3}
 --- !u!1 &1746074109
 GameObject:
   m_ObjectHideFlags: 0
@@ -2100,7 +2025,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WoodPool
   woodPrefab: {fileID: 2885262617620004430, guid: 24f6901c2f624e047b5482c016a823b5, type: 3}
-  poolSize: 20
+  poolSize: 30
 --- !u!4 &1906801248
 Transform:
   m_ObjectHideFlags: 0
@@ -2288,4 +2213,3 @@ SceneRoots:
   - {fileID: 1132632995}
   - {fileID: 515055787}
   - {fileID: 1565960617}
-  - {fileID: 1744487859}
