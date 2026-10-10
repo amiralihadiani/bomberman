@@ -208,17 +208,25 @@ public class GroundPool : MonoBehaviour
     private void SpawnWoodForGap(float gapStartZ, float gapLength)
     {
         if (woodPool == null) return;
+    
         int woodCount = Random.Range(currentMinWoods, currentMaxWoods + 1); 
-        float margin = 0.5f;
+    
+        // حاشیه امن از ابتدا و انتهای دره
+        float margin = 0.6f;
         float availableSpan = Mathf.Max(1f, gapLength - (margin * 2f));
+    
+        // تقسیم مساوی فضای دره بین تمام چوب‌ها تا همگی بدون حذف شدن ساخته شوند
         float zStep = availableSpan / (woodCount + 1);
-        float safeXRange = Mathf.Min(woodXRange, 1.4f);
+
+        float safeXRange = Mathf.Min(woodXRange, 1.3f);
         float lastX = -99f; 
+
         for (int i = 0; i < woodCount; i++)
         {
-            GameObject wood = woodPool.GetWood();
-            if (wood == null) return;
-            float woodZ = gapStartZ + margin + ((i + 1) * zStep) + Random.Range(-0.1f, 0.1f);
+            // محاسبه موقعیت Z به صورت توزیع شده در سرتاسر طول دره
+            float woodZ = gapStartZ + margin + ((i + 1) * zStep) + Random.Range(-0.05f, 0.05f);
+
+            // تعیین موقعیت X با عدم هم‌پوشانی با چوب قبلی
             float randomX = 0f;
             int safetyCheck = 0;
             do
@@ -227,9 +235,16 @@ public class GroundPool : MonoBehaviour
                 safetyCheck++;
             } 
             while (Mathf.Abs(randomX - lastX) < 0.8f && safetyCheck < 5);
+
             lastX = randomX;
-            wood.transform.position = new Vector3(randomX, 0.5f, woodZ);
-            wood.tag = "WoodPickup";
+
+            Vector3 finalPos = new Vector3(randomX, 0.5f, woodZ);
+
+            GameObject wood = woodPool.GetWoodAtPosition(finalPos);
+            if (wood != null)
+            {
+                wood.tag = "WoodPickup";
+            }
         }
-    }
+    } 
 }
