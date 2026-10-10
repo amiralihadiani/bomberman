@@ -1,10 +1,14 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject winPanel;
+    [SerializeField] private TextMeshProUGUI totalGemsText;
+    private int collectedGems = 0;
     private void Awake()
     {
         if (Instance == null)
@@ -27,6 +31,10 @@ public class GameManager : MonoBehaviour
             winPanel.SetActive(false);
         }
         Time.timeScale = 1f;
+    }
+    public void AddGems(int amount)
+    {
+        collectedGems += amount;
     }
     public void GameOver()
     {
@@ -52,6 +60,10 @@ public class GameManager : MonoBehaviour
         {
             winPanel.SetActive(true); 
         }
+        if (totalGemsText != null)
+        {
+            totalGemsText.text = "Gems: " + collectedGems.ToString();
+        }
         Time.timeScale = 0f;
-    }
+    } 
 }

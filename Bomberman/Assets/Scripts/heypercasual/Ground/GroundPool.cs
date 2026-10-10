@@ -14,6 +14,9 @@ public class GroundPool : MonoBehaviour
     [SerializeField] private float woodSpacing = 1f;
     [SerializeField] private GameObject gatePrefab; 
     [SerializeField] private int totalGatesToSpawn = 6; 
+    [SerializeField] private GameObject gemPrefab; 
+    [SerializeField] private int totalGemsToSpawn = 10;
+    [SerializeField] private float gemXRange = 2.0f; 
     [SerializeField] private GameObject finishLinePrefab;
     [SerializeField] private int totalGroundsToFinish = 15;
     private GameObject[] groundPool;
@@ -23,8 +26,12 @@ public class GroundPool : MonoBehaviour
     private int spawnedGateCount = 0;
     private int lastGateGroundIndex = -2; 
     private bool isFinishLineSpawned = false;
+    private float totalTrackLength;
+    private float gemInterval;
     private void Start()
     {
+        totalTrackLength = totalGroundsToFinish * groundLength;
+        gemInterval = totalTrackLength / (totalGemsToSpawn + 1);
         CreateGroundPool();
         SpawnInitialGrounds();
     }
@@ -51,6 +58,7 @@ public class GroundPool : MonoBehaviour
         {
             groundPool[i].SetActive(true);
             spawnedGroundCount++; 
+            float groundStartZ = currentZ;
             float groundCenterZ = currentZ + (groundLength / 2f);
             groundPool[i].transform.position = new Vector3(0f, -0.5f, groundCenterZ);
             currentZ += groundLength;
@@ -67,6 +75,7 @@ public class GroundPool : MonoBehaviour
             {
                 SpawnGateAtCenter(groundCenterZ);
             }
+            TrySpawnUniformGems(groundStartZ, groundStartZ + groundLength);
         }
         nextGroundZ = currentZ;
     }
@@ -85,6 +94,7 @@ public class GroundPool : MonoBehaviour
     {
         if (isFinishLineSpawned) return;
         spawnedGroundCount++;
+        float groundStartZ = nextGroundZ;
         float groundCenterZ = nextGroundZ + (groundLength / 2f);
         ground.transform.position = new Vector3(0f, -0.5f, groundCenterZ);
         if (spawnedGroundCount >= totalGroundsToFinish)
@@ -96,7 +106,7 @@ public class GroundPool : MonoBehaviour
                 GameObject finishObj = Instantiate(finishLinePrefab, finishPos, Quaternion.identity);
                 finishObj.tag = "FinishLine";
             }
-            return; 
+            return;
         }
         bool isGap = false;
         nextGroundZ += groundLength;
@@ -112,6 +122,7 @@ public class GroundPool : MonoBehaviour
         {
             SpawnGateAtCenter(groundCenterZ);
         }
+        TrySpawnUniformGems(groundStartZ, groundStartZ + groundLength);
     }
     private bool CanSpawnGate()
     {
@@ -125,9 +136,24 @@ public class GroundPool : MonoBehaviour
         if (gatePrefab == null) return;
         Vector3 gatePosition = new Vector3(0f, 0.5f, groundCenterZ);
         Instantiate(gatePrefab, gatePosition, Quaternion.identity);
-    
         spawnedGateCount++;
-        lastGateGroundIndex = spawnedGroundCount; 
+        lastGateGroundIndex = spawnedGroundCount;
+    }
+    private void TrySpawnUniformGems(float startZ, float endZ)
+    {
+        if (gemPrefab == null) return;
+
+        for (int g = 0; g < totalGemsToSpawn; g++)
+        {
+            float targetGemZ = (g + 1) * gemInterval;
+            if (targetGemZ >= startZ && targetGemZ < endZ)
+            {
+                float finalZ = targetGemZ + Random.Range(-1f, 1f);
+                float finalX = Random.Range(-gemXRange, gemXRange);
+                Vector3 gemPos = new Vector3(finalX, 0.5f, finalZ);
+                Instantiate(gemPrefab, gemPos, Quaternion.identity);
+            }
+        }
     }
     private void SpawnWoodForGap(float groundStartZ, float gapLength)
     {
