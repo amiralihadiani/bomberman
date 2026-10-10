@@ -550,14 +550,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4341bb679fafb44999e2843a5fdc403, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GroundPool
+  gameDifficulty: 2
   player: {fileID: 2029469285}
   groundPrefab: {fileID: 6815482631907156999, guid: 1be506b473c8c63499372859befb8b45, type: 3}
   poolSize: 7
   groundLength: 10
   safeStartGrounds: 3
-  minGap: 4
-  maxGap: 7
-  gapChance: 0.6
   woodPool: {fileID: 1906801247}
   woodSpacing: 1
   gatePrefab: {fileID: 2925361353026423946, guid: 9b6debdeccd6c6649acecb7f251f6107, type: 3}
@@ -565,6 +563,7 @@ MonoBehaviour:
   gemPrefab: {fileID: 6631348181216241454, guid: 4a1db22747ea0244bbf81cfdb915d48f, type: 3}
   totalGemsToSpawn: 10
   gemXRange: 1.5
+  woodXRange: 2
   finishLinePrefab: {fileID: 7067136160083693516, guid: 8af38abd731b45147ab82087d4725bf9, type: 3}
   totalGroundsToFinish: 20
 --- !u!4 &415271285

@@ -32,7 +32,7 @@ public class RandomGate : MonoBehaviour
     {
         switch (type)
         {
-            case GateType.Add: return Random.Range(3, 15);
+            case GateType.Add: return Random.Range(3, 10);
             case GateType.Subtract: return Random.Range(1, 10);
             case GateType.Multiply: return Random.Range(2, 4);
             case GateType.Divide: return Random.Range(2, 3);
