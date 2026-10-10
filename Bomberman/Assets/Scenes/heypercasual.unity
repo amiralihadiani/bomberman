@@ -550,7 +550,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4341bb679fafb44999e2843a5fdc403, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GroundPool
-  gameDifficulty: 2
+  gameDifficulty: 3
   player: {fileID: 2029469285}
   groundPrefab: {fileID: 6815482631907156999, guid: 1be506b473c8c63499372859befb8b45, type: 3}
   poolSize: 7

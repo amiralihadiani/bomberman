@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 public class GroundPool : MonoBehaviour
 { 
-    public enum Difficulty { Easy, Medium, Hard }
+    public enum Difficulty { VeryEasy, Easy, Medium, Hard, VeryHard }
     [SerializeField] private Difficulty gameDifficulty = Difficulty.Medium;
     [SerializeField] private Transform player;
     [SerializeField] private GameObject groundPrefab;
@@ -45,30 +45,46 @@ public class GroundPool : MonoBehaviour
     {
         switch (gameDifficulty)
         {
+            case Difficulty.VeryEasy:
+                currentMinGap = 1.5f;
+                currentMaxGap = 3f;
+                currentGapChance = 0.2f; 
+                currentMinWoods = 6;  
+                currentMaxWoods = 8;
+                break;
+
             case Difficulty.Easy:
                 currentMinGap = 2f;
                 currentMaxGap = 4f;
-                currentGapChance = 0.3f; 
-                currentMinWoods = 8;     
-                currentMaxWoods = 10;
+                currentGapChance = 0.35f;
+                currentMinWoods = 4;     
+                currentMaxWoods = 7;
                 break;
 
             case Difficulty.Medium:
-                currentMinGap = 4f;      
-                currentMaxGap = 6.5f;     
+                currentMinGap = 4f;
+                currentMaxGap = 6.5f;
                 currentGapChance = 0.55f; 
                 currentMinWoods = 4;      
                 currentMaxWoods = 5;
                 break;
 
             case Difficulty.Hard:
-                currentMinGap = 6f;
-                currentMaxGap = 8.5f;
-                currentGapChance = 0.75f; 
-                currentMinWoods = 6;     
-                currentMaxWoods = 7;
+                currentMinGap = 5.5f;
+                currentMaxGap = 7.5f;
+                currentGapChance = 0.7f; 
+                currentMinWoods = 4;     
+                currentMaxWoods = 8;
                 break;
-        }
+
+            case Difficulty.VeryHard:
+                currentMinGap = 7f;
+                currentMaxGap = 9.5f;
+                currentGapChance = 0.85f;
+                currentMinWoods = 4;     
+                currentMaxWoods = 8;
+                break;
+        } 
     } 
     private void Update()
     {
@@ -189,19 +205,31 @@ public class GroundPool : MonoBehaviour
             }
         }
     }
-    private void SpawnWoodForGap(float groundStartZ, float gapLength)
+    private void SpawnWoodForGap(float gapStartZ, float gapLength)
     {
         if (woodPool == null) return;
         int woodCount = Random.Range(currentMinWoods, currentMaxWoods + 1); 
-        float startZ = groundStartZ + 1f;
+        float margin = 0.5f;
+        float availableSpan = Mathf.Max(1f, gapLength - (margin * 2f));
+        float zStep = availableSpan / (woodCount + 1);
+        float safeXRange = Mathf.Min(woodXRange, 1.4f);
+        float lastX = -99f; 
         for (int i = 0; i < woodCount; i++)
         {
             GameObject wood = woodPool.GetWood();
             if (wood == null) return;
-            float randomX = Random.Range(-woodXRange, woodXRange);
-            float woodZ = startZ + (i * woodSpacing);
+            float woodZ = gapStartZ + margin + ((i + 1) * zStep) + Random.Range(-0.1f, 0.1f);
+            float randomX = 0f;
+            int safetyCheck = 0;
+            do
+            {
+                randomX = Random.Range(-safeXRange, safeXRange);
+                safetyCheck++;
+            } 
+            while (Mathf.Abs(randomX - lastX) < 0.8f && safetyCheck < 5);
+            lastX = randomX;
             wood.transform.position = new Vector3(randomX, 0.5f, woodZ);
             wood.tag = "WoodPickup";
         }
-    } 
+    }
 }
