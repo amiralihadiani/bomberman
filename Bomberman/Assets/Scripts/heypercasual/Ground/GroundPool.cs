@@ -1,15 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
 public class GroundPool : MonoBehaviour
-{
+{ 
+    public enum Difficulty { VeryEasy, Easy, Medium, Hard, VeryHard }
+    [SerializeField] private Difficulty gameDifficulty = Difficulty.Medium;
     [SerializeField] private Transform player;
     [SerializeField] private GameObject groundPrefab;
     [SerializeField] private int poolSize = 7;
     [SerializeField] private float groundLength = 10f;
     [SerializeField] private int safeStartGrounds = 2;
-    [SerializeField] private float minGap = 3f;
-    [SerializeField] private float maxGap = 7f;
-    [SerializeField] private float gapChance = 0.5f;
     [SerializeField] private WoodPool woodPool;
     [SerializeField] private float woodSpacing = 1f;
     [SerializeField] private GameObject gatePrefab; 
@@ -17,6 +16,7 @@ public class GroundPool : MonoBehaviour
     [SerializeField] private GameObject gemPrefab; 
     [SerializeField] private int totalGemsToSpawn = 10;
     [SerializeField] private float gemXRange = 2.0f; 
+    [SerializeField] private float woodXRange = 2.0f;
     [SerializeField] private GameObject finishLinePrefab;
     [SerializeField] private int totalGroundsToFinish = 15;
     private GameObject[] groundPool;
@@ -28,13 +28,65 @@ public class GroundPool : MonoBehaviour
     private bool isFinishLineSpawned = false;
     private float totalTrackLength;
     private float gemInterval;
+    private float currentMinGap;
+    private float currentMaxGap;
+    private float currentGapChance;
+    private int currentMinWoods;
+    private int currentMaxWoods;
+    private int spawnedGapCounter = 0;
     private void Start()
     {
+        ApplyDifficultySettings();
         totalTrackLength = totalGroundsToFinish * groundLength;
         gemInterval = totalTrackLength / (totalGemsToSpawn + 1);
         CreateGroundPool();
         SpawnInitialGrounds();
     }
+    private void ApplyDifficultySettings()
+    {
+        switch (gameDifficulty)
+        {
+            case Difficulty.VeryEasy:
+                currentMinGap = 1.5f;
+                currentMaxGap = 3f;
+                currentGapChance = 0.2f; 
+                currentMinWoods = 6;  
+                currentMaxWoods = 8;
+                break;
+
+            case Difficulty.Easy:
+                currentMinGap = 2f;
+                currentMaxGap = 4f;
+                currentGapChance = 0.35f;
+                currentMinWoods = 4;     
+                currentMaxWoods = 7;
+                break;
+
+            case Difficulty.Medium:
+                currentMinGap = 4f;
+                currentMaxGap = 6.5f;
+                currentGapChance = 0.55f; 
+                currentMinWoods = 4;      
+                currentMaxWoods = 5;
+                break;
+
+            case Difficulty.Hard:
+                currentMinGap = 5.5f;
+                currentMaxGap = 7.5f;
+                currentGapChance = 0.7f; 
+                currentMinWoods = 4;     
+                currentMaxWoods = 8;
+                break;
+
+            case Difficulty.VeryHard:
+                currentMinGap = 7f;
+                currentMaxGap = 9.5f;
+                currentGapChance = 0.85f;
+                currentMinWoods = 4;     
+                currentMaxWoods = 8;
+                break;
+        } 
+    } 
     private void Update()
     {
         RecycleGrounds();
@@ -63,10 +115,10 @@ public class GroundPool : MonoBehaviour
             groundPool[i].transform.position = new Vector3(0f, -0.5f, groundCenterZ);
             currentZ += groundLength;
             bool isGap = false;
-            if (i >= safeStartGrounds && Random.value < gapChance && spawnedGroundCount < totalGroundsToFinish - 1)
+            if (i >= safeStartGrounds && Random.value < currentGapChance && spawnedGroundCount < totalGroundsToFinish - 1)
             {
                 isGap = true;
-                float gapLength = Random.Range(minGap, maxGap);
+                float gapLength = Random.Range(currentMinGap, currentMaxGap);
                 float gapStart = currentZ - groundLength;
                 SpawnWoodForGap(gapStart, gapLength);
                 currentZ += gapLength;
@@ -110,10 +162,10 @@ public class GroundPool : MonoBehaviour
         }
         bool isGap = false;
         nextGroundZ += groundLength;
-        if (Random.value < gapChance && spawnedGroundCount < totalGroundsToFinish - 1)
+        if (Random.value < currentGapChance && spawnedGroundCount < totalGroundsToFinish - 1)
         {
             isGap = true;
-            float gapLength = Random.Range(minGap, maxGap);
+            float gapLength = Random.Range(currentMinGap, currentMaxGap);
             float gapStart = nextGroundZ - groundLength;
             SpawnWoodForGap(gapStart, gapLength);
             nextGroundZ += gapLength;
@@ -142,7 +194,6 @@ public class GroundPool : MonoBehaviour
     private void TrySpawnUniformGems(float startZ, float endZ)
     {
         if (gemPrefab == null) return;
-
         for (int g = 0; g < totalGemsToSpawn; g++)
         {
             float targetGemZ = (g + 1) * gemInterval;
@@ -155,17 +206,41 @@ public class GroundPool : MonoBehaviour
             }
         }
     }
-    private void SpawnWoodForGap(float groundStartZ, float gapLength)
+    private void SpawnWoodForGap(float gapStartZ, float gapLength)
     {
         if (woodPool == null) return;
-        int woodCount = Random.Range(5, 10); 
-        float startZ = groundStartZ + 1f;
+        spawnedGapCounter++;
+        int minWoods = currentMinWoods;
+        int maxWoods = currentMaxWoods;
+        if ((gameDifficulty == Difficulty.Hard || gameDifficulty == Difficulty.VeryHard) && spawnedGapCounter <= 2)
+        {
+            minWoods = 8;
+            maxWoods = 12; 
+        }
+        int woodCount = Random.Range(minWoods, maxWoods + 1); 
+        float margin = 0.6f;
+        float availableSpan = Mathf.Max(1f, gapLength - (margin * 2f));
+        float zStep = availableSpan / (woodCount + 1);
+        float safeXRange = Mathf.Min(woodXRange, 1.3f);
+        float lastX = -99f; 
         for (int i = 0; i < woodCount; i++)
         {
-            GameObject wood = woodPool.GetWood();
-            if (wood == null) return;
-            wood.transform.position = new Vector3(0f, 0.5f, startZ + (i * woodSpacing));
-            wood.tag = "WoodPickup";
+            float woodZ = gapStartZ + margin + ((i + 1) * zStep) + Random.Range(-0.05f, 0.05f);
+            float randomX = 0f;
+            int safetyCheck = 0;
+            do
+            {
+                randomX = Random.Range(-safeXRange, safeXRange);
+                safetyCheck++;
+            } 
+            while (Mathf.Abs(randomX - lastX) < 0.8f && safetyCheck < 5);
+            lastX = randomX;
+            Vector3 finalPos = new Vector3(randomX, 0.5f, woodZ);
+            GameObject wood = woodPool.GetWoodAtPosition(finalPos);
+            if (wood != null)
+            {
+                wood.tag = "WoodPickup";
+            }
         }
     } 
 }
