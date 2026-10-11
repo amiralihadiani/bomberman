@@ -11,6 +11,8 @@ public class GatePair : MonoBehaviour
     private void SetupGates()
     {
         if (leftGate == null || rightGate == null) return;
+        leftGate.SetSibling(rightGate);
+        rightGate.SetSibling(leftGate);
         leftGate.RandomizeGate();
         GateType rightType;
         int rightValue;
@@ -21,5 +23,5 @@ public class GatePair : MonoBehaviour
         }
         while (rightType == leftGate.CurrentType || rightValue == leftGate.Value);
         rightGate.SetGateValues(rightType, rightValue);
-    }
+    } 
 }
