@@ -2306,7 +2306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WoodPool
   woodPrefab: {fileID: 2885262617620004430, guid: 24f6901c2f624e047b5482c016a823b5, type: 3}
-  poolSize: 30
+  poolSize: 50
 --- !u!4 &1906801248
 Transform:
   m_ObjectHideFlags: 0
