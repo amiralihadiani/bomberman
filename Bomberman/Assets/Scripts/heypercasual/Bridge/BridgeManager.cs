@@ -127,14 +127,15 @@ public class BridgeManager : MonoBehaviour
                 StartCoroutine(DisablePlankWithDelay(oldestPlank, destroyDelay));
             }
         }
-        Vector3 spawnPos = new Vector3(0f, bridgeYPosition, nextSpawnZ);
+        float spawnX = player != null ? player.position.x : 0f;
+        Vector3 spawnPos = new Vector3(spawnX, bridgeYPosition, nextSpawnZ);
         GameObject newPlank = bridgeTilePool.GetTileAtPosition(spawnPos, woodRotation);
         if (newPlank != null)
         {
             activeBridgePlanks.Enqueue(newPlank);
         }
         nextSpawnZ += woodLength;
-    }
+    } 
     private void ClearActiveBridgePlanks()
     {
         while (activeBridgePlanks.Count > 0)
