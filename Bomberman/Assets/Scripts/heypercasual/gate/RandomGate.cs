@@ -9,6 +9,8 @@ public class RandomGate : MonoBehaviour
     [SerializeField] private Color subtractColor = Color.red;      
     [SerializeField] private Color multiplyColor = Color.blue;    
     [SerializeField] private Color divideColor = new Color(0.6f, 0f, 0.8f); 
+    [SerializeField] private RandomGate siblingGate; 
+    private bool isTriggered = false;
     public GateType CurrentType { get; private set; }
     public int Value { get; private set; }
     private Collider gateCollider;
@@ -16,17 +18,29 @@ public class RandomGate : MonoBehaviour
     {
         gateCollider = GetComponent<Collider>();
     }
+    public void SetSibling(RandomGate sibling)
+    {
+        siblingGate = sibling;
+    }
     public void RandomizeGate()
     {
+        isTriggered = false;
         CurrentType = (GateType)Random.Range(0, 4);
         Value = GetRandomValueForType(CurrentType);
         UpdateGateVisuals();
+        if (gateMeshRenderer != null) gateMeshRenderer.enabled = true;
+        if (gateCollider != null) gateCollider.enabled = true;
+        if (gateText != null) gateText.enabled = true;
     }
     public void SetGateValues(GateType type, int value)
     {
+        isTriggered = false;
         CurrentType = type;
         Value = value;
         UpdateGateVisuals();
+        if (gateMeshRenderer != null) gateMeshRenderer.enabled = true;
+        if (gateCollider != null) gateCollider.enabled = true;
+        if (gateText != null) gateText.enabled = true;
     }
     public int GetRandomValueForType(GateType type)
     {
@@ -67,17 +81,27 @@ public class RandomGate : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !isTriggered)
         {
+            isTriggered = true;
+            if (siblingGate != null)
+            {
+                siblingGate.DeactivateGate();
+            }
             BridgeManager bridgeManager = FindObjectOfType<BridgeManager>();
             if (bridgeManager != null)
             {
                 ApplyGateEffect(bridgeManager);
             }
-            if (gateMeshRenderer != null) gateMeshRenderer.enabled = false;
-            if (gateCollider != null) gateCollider.enabled = false;
-            if (gateText != null) gateText.enabled = false;
+            DeactivateGate();
         }
+    }
+    public void DeactivateGate()
+    {
+        isTriggered = true;
+        if (gateMeshRenderer != null) gateMeshRenderer.enabled = false;
+        if (gateCollider != null) gateCollider.enabled = false;
+        if (gateText != null) gateText.enabled = false;
     }
     private void ApplyGateEffect(BridgeManager bridgeManager)
     {
