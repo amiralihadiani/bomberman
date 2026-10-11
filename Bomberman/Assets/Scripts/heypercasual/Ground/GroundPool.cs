@@ -218,14 +218,14 @@ public class GroundPool : MonoBehaviour
             maxWoods = 12; 
         }
         int woodCount = Random.Range(minWoods, maxWoods + 1); 
-        float margin = 0.6f;
+        float margin = 0.8f;
         float availableSpan = Mathf.Max(1f, gapLength - (margin * 2f));
         float zStep = availableSpan / (woodCount + 1);
-        float safeXRange = Mathf.Min(woodXRange, 1.3f);
+        float safeXRange = Mathf.Min(woodXRange, 8.5f);
         float lastX = -99f; 
         for (int i = 0; i < woodCount; i++)
         {
-            float woodZ = gapStartZ + margin + ((i + 1) * zStep) + Random.Range(-0.05f, 0.05f);
+            float woodZ = gapStartZ + margin + ((i + 1) * zStep) + Random.Range(-0.15f, 0.15f);
             float randomX = 0f;
             int safetyCheck = 0;
             do
@@ -233,7 +233,7 @@ public class GroundPool : MonoBehaviour
                 randomX = Random.Range(-safeXRange, safeXRange);
                 safetyCheck++;
             } 
-            while (Mathf.Abs(randomX - lastX) < 0.8f && safetyCheck < 5);
+            while (Mathf.Abs(randomX - lastX) < 1.5f && safetyCheck < 10);
             lastX = randomX;
             Vector3 finalPos = new Vector3(randomX, 0.5f, woodZ);
             GameObject wood = woodPool.GetWoodAtPosition(finalPos);
